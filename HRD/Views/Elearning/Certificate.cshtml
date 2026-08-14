@@ -1,0 +1,230 @@
+﻿@{
+    ViewData["Title"] = "ขอรับวุฒิบัตร (E-Certificate)";
+    var selectedCourse = ViewBag.SelectedCourseCode as string;
+}
+
+<!-- Import Bootstrap Icons & JS กรณีที่ Layout หลักยังไม่ได้โหลด -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --primary-red: #C8102E;
+        --primary-dark: #9B0B21;
+        --bg-slate: #F8FAFC;
+        --card-radius: 16px;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        font-family: 'Kanit', sans-serif;
+    }
+
+    .cert-card {
+        border: none;
+        border-radius: var(--card-radius);
+        background: #ffffff;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .fs-7 { font-size: 0.875rem; }
+    .fs-8 { font-size: 0.75rem; }
+
+    .border-end-lg {
+        @@media (min-width: 992px) {
+            border-right: 1px solid #E2E8F0;
+        }
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header & Back Button -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-controller="Elearning" asp-action="Index" class="btn btn-light rounded-circle shadow-sm p-2">
+                <i class="bi bi-arrow-left fs-5"></i>
+            </a>
+            <div>
+                <h4 class="fw-bold text-dark m-0">ขอรับวุฒิบัตรผ่านการอบรม</h4>
+                <p class="text-muted small m-0">E-Certificate Application System</p>
+            </div>
+        </div>
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fs-7 fw-semibold">
+            <i class="bi bi-check-circle-fill me-1"></i> Auto Generation
+        </span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card cert-card p-4">
+        <div class="row g-4">
+
+            <!-- Form Section -->
+            <div class="col-lg-7 border-end-lg pe-lg-4">
+                <form id="certForm" asp-controller="Elearning" asp-action="RequestCertificate" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label fs-7 fw-semibold text-dark">รหัสพนักงาน <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i class="bi bi-person-badge text-muted"></i></span>
+                                <input type="text" name="empId" class="form-control bg-light border-0 fs-7" placeholder="เช่น EMP-9045" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <label class="form-label fs-7 fw-semibold text-dark">ชื่อ - นามสกุล <span class="text-danger">*</span></label>
+                            <input type="text" id="inputFullName" name="fullName" class="form-control bg-light border-0 fs-7" placeholder="ระบุชื่อ-นามสกุลสำหรับออกใบรับรอง" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fs-7 fw-semibold text-dark">หลักสูตรที่ผ่านการอบรม <span class="text-danger">*</span></label>
+                            <select id="selectCourse" name="courseCode" class="form-select bg-light border-0 fs-7" required>
+                                <option value="" disabled selected="@(selectedCourse == null)">-- เลือกประเภท / รหัส / ชื่อหลักสูตร --</option>
+                                <option value="COMP-001" selected="@(selectedCourse == "COMP-001")">[Compliance] COMP-001 : PDPA & Data Protection for Staff</option>
+                                <option value="TECH-004" selected="@(selectedCourse == "TECH-004")">[Technical] TECH-004 : Basic UX/UI Design Concept</option>
+                                <option value="SAFE-002" selected="@(selectedCourse == "SAFE-002")">[Safety] SAFE-002 : ข้อปฏิบัติความปลอดภัยในโรงงาน</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fs-7 fw-semibold text-dark">วันที่อบรมเสร็จ <span class="text-danger">*</span></label>
+                            <input type="date" name="completedDate" class="form-control bg-light border-0 fs-7" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fs-7 fw-semibold text-dark">ช่องทางรับวุฒิบัตร <span class="text-danger">*</span></label>
+                            <select name="deliveryChannel" class="form-select bg-light border-0 fs-7" required>
+                                <option value="email" selected>ส่งเข้า Email พนักงาน (PDF)</option>
+                                <option value="download">ดาวน์โหลดไฟล์ทันที (Direct Download)</option>
+                                <option value="line">ส่งแจ้งเตือนผ่าน LINE Official</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-danger rounded-3 px-4 py-2 fw-medium shadow-sm me-2">
+                                <i class="bi bi-file-earmark-pdf-fill me-1"></i> ออกวุฒิบัตร / ตรวจสอบสิทธิ์
+                            </button>
+                            <a asp-controller="Elearning" asp-action="Index" class="btn btn-light rounded-3 px-3 py-2 text-muted fs-7">ยกเลิก</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Preview Card Section -->
+            <div class="col-lg-5 ps-lg-4">
+                <div class="p-3 rounded-4 bg-light h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-dark m-0 fs-7"><i class="bi bi-file-earmark-check text-success me-1"></i> ตัวอย่างวุฒิบัตรที่จะได้รับ</h6>
+                            <span class="badge bg-success bg-opacity-10 text-success fs-8">Live Preview</span>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-3 p-3 text-center position-relative overflow-hidden"
+                             style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F5 100%); border: 2px solid #FEE2E2 !important;">
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <i class="bi bi-shield-check text-danger opacity-25 fs-1"></i>
+                            </div>
+
+                            <small class="text-uppercase fw-bold text-muted fs-8 tracking-wider">Certificate of Completion</small>
+                            <div class="fw-bold text-danger fs-6 my-1">ใบรับรองการผ่านการฝึกอบรม</div>
+                            <div class="fs-8 text-secondary">มอบให้แก่</div>
+                            <div id="previewName" class="fw-bold text-dark fs-6 my-1 border-bottom pb-2 text-truncate">คุณพนักงาน (กรอกข้อมูลซ้ายมือ)</div>
+                            <small class="fs-8 text-muted d-block">ได้ผ่านการอบรมหลักสูตร</small>
+                            <div id="previewCourse" class="fw-semibold text-dark fs-7 my-1">
+                                @(selectedCourse != null ? selectedCourse : "-- เลือกหลักสูตร --")
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-end mt-3 pt-2 border-top fs-8 text-muted">
+                                <div>รหัส: <span class="fw-bold text-dark">CERT-2026-0892</span></div>
+                                <div class="text-danger fw-bold"><i class="bi bi-qr-code"></i> Dynamic QR</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal แสดงผลวุฒิบัตรเมื่อ Submit Success -->
+<div class="modal fade" id="certResultModal" tabindex="-1" aria-labelledby="certResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-success" id="certResultModalLabel">
+                    <i class="bi bi-check-circle-fill me-2"></i>ออกวุฒิบัตรสำเร็จ!
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="p-4 rounded-4 mb-3" style="background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%); border: 2px solid #C8102E;">
+                    <div class="text-uppercase fw-bold text-muted fs-8 tracking-widest">Certificate of Completion</div>
+                    <h3 class="fw-bold text-danger my-2">ใบรับรองการผ่านการฝึกอบรม</h3>
+                    <p class="text-muted mb-1 fs-7">ขอมอบไว้เพื่อแสดงว่า</p>
+                    <h4 class="fw-bold text-dark my-2" id="modalEmpName">คุณพนักงาน</h4>
+                    <p class="text-muted mb-1 fs-7">ได้ผ่านการฝึกอบรมหลักสูตร</p>
+                    <h5 class="fw-semibold text-danger my-2" id="modalCourseName">-- ชื่อหลักสูตร --</h5>
+                    <small class="text-muted d-block mt-3 fs-8">อนุมัติเรียบร้อยแล้ว | รหัสอ้างอิง: CERT-2026-9901</small>
+                </div>
+
+                <p class="text-muted fs-7 mb-3">ระบบได้ทำการบันทึกและออกวุฒิบัตรเรียบร้อยแล้ว ท่านสามารถดาวน์โหลดไฟล์ PDF ได้ทันที</p>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-medium shadow-sm" onclick="alert('ระบบกำลังดาวน์โหลดไฟล์ PDF ใบรับรอง...')">
+                        <i class="bi bi-download me-1"></i> ดาวน์โหลด PDF
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-medium" data-bs-dismiss="modal">
+                        ปิดหน้าต่าง
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- โหลด Bootstrap JS เผื่อไว้โดยตรง เพื่อป้องกันปัญหาไม่ได้ใส่ใน _Layout -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Pure Script ไม่ใส่ Section เพื่อให้รันได้แน่นอนทุกเครื่อง -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputFullName = document.getElementById('inputFullName');
+        const selectCourse = document.getElementById('selectCourse');
+        const previewName = document.getElementById('previewName');
+        const previewCourse = document.getElementById('previewCourse');
+        const certForm = document.getElementById('certForm');
+
+        // 1. Live Preview ชื่อ-นามสกุล
+        if (inputFullName) {
+            inputFullName.addEventListener('input', function () {
+                previewName.innerText = this.value.trim() !== '' ? this.value : 'คุณพนักงาน (กรอกข้อมูลซ้ายมือ)';
+            });
+        }
+
+        // 2. Live Preview หลักสูตร
+        if (selectCourse) {
+            selectCourse.addEventListener('change', function () {
+                const selectedText = this.options[this.selectedIndex].text;
+                previewCourse.innerText = selectedText;
+            });
+        }
+
+        // 3. Handle Submit & Show Modal
+        if (certForm) {
+            certForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // ป้องกันการ reload หน้า
+
+                // ใส่ข้อมูลลงใน Modal
+                document.getElementById('modalEmpName').innerText = inputFullName.value || 'คุณพนักงาน';
+                document.getElementById('modalCourseName').innerText = selectCourse.options[selectCourse.selectedIndex].text;
+
+                // สั่งเปิด Modal
+                const modalElement = document.getElementById('certResultModal');
+                const resultModal = new bootstrap.Modal(modalElement);
+                resultModal.show();
+            });
+        }
+    });
+</script>

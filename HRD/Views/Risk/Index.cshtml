@@ -1,0 +1,289 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "สรุปการบริหารจัดการความเสี่ยง ฝ่ายทรัพยากรบุคคล";
+    string currentRound = "รอบที่ 2/2569";
+    string asOfDate = "31 พฤษภาคม 2569";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+            :root {
+                --sidebar-bg: #0f172a; /* Slate 900 Ultra Dark */
+                --sidebar-active: #1e293b;
+                --sidebar-hover: #1f293d;
+                --main-bg: #f8fafc;
+                --brand-accent: #3b82f6;
+                --card-radius: 12px;
+                --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            body {
+                background-color: var(--main-bg);
+                font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                overflow-x: hidden;
+            }
+
+            /* ----------------------------------------------------
+                       Sidebar Styling
+                    ---------------------------------------------------- */
+            .risk-sidebar {
+                width: 280px;
+                min-height: 100vh;
+                background-color: var(--sidebar-bg);
+                color: #94a3b8;
+                transition: var(--transition-smooth);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+                .risk-sidebar .brand-header {
+                    padding: 1.5rem 1.25rem;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                }
+
+                .risk-sidebar .nav-link {
+                    color: #94a3b8;
+                    padding: 0.85rem 1.25rem;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    border-radius: 0.5rem;
+                    margin: 0.2rem 0.75rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    transition: var(--transition-smooth);
+                    cursor: pointer;
+                }
+
+                    .risk-sidebar .nav-link:hover {
+                        color: #ffffff;
+                        background-color: var(--sidebar-hover);
+                    }
+
+                    .risk-sidebar .nav-link.active {
+                        color: #ffffff;
+                        background-color: #1e3a8a; /* Deep Blue Active */
+                        border-left: 4px solid var(--brand-accent);
+                        font-weight: 600;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+                    }
+
+            /* ----------------------------------------------------
+                       Main Content Area
+                    ---------------------------------------------------- */
+            .main-content {
+                flex: 1;
+                padding: 1.75rem 2rem;
+                overflow-y: auto;
+                max-width: 1600px;
+            }
+
+            .top-filter-card {
+                background: #ffffff;
+                border-radius: var(--card-radius);
+                padding: 1.25rem 1.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+                border: 1px solid rgba(226, 232, 240, 0.8);
+            }
+
+            /* Utility Classes */
+            .fs-7 {
+                font-size: 0.875rem;
+            }
+
+            .fs-8 {
+                font-size: 0.78rem;
+            }
+
+            .content-card {
+                background: #ffffff;
+                border-radius: var(--card-radius);
+                border: 1px solid rgba(226, 232, 240, 0.8);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+                transition: var(--transition-smooth);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex">
+        <!-- ==================== SIDEBAR MENU ==================== -->
+        <aside class="risk-sidebar d-flex flex-column flex-shrink-0">
+            <!-- Brand / Header Title -->
+            <div class="brand-header d-flex align-items-center gap-3">
+                <div class="bg-primary text-white p-2.5 rounded-3 shadow-sm">
+                    <i class="bi bi-shield-lock-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-white mb-0 fs-7">สรุปการบริหารจัดการความเสี่ยง</h6>
+                    <small class="text-muted fs-8">ฝ่ายทรัพยากรบุคคล (HRM)</small>
+                </div>
+            </div>
+
+            <!-- Navigation Menu Items -->
+            <ul class="nav nav-pills flex-column mt-3 mb-auto">
+                <!-- 1. ภาพรวมการบริหารจัดการความเสี่ยง -->
+                <li class="nav-item">
+                    <a class="nav-link active" id="menu-overview" onclick="switchTab('overview')">
+                        <i class="bi bi-bar-chart-line-fill text-info"></i>
+                        <span>ภาพรวมการบริหารจัดการความเสี่ยง</span>
+                    </a>
+                </li>
+
+                <!-- 2. ทะเบียนความเสี่ยง -->
+                <li class="nav-item">
+                    <a class="nav-link" id="menu-register" onclick="switchTab('register')">
+                        <i class="bi bi-journal-text text-warning"></i>
+                        <span>ทะเบียนความเสี่ยง</span>
+                    </a>
+                </li>
+
+                <!-- 3. แผนภูมิความเสี่ยงรวม -->
+                <li class="nav-item">
+                    <a class="nav-link" id="menu-overall-chart" onclick="switchTab('overall-chart')">
+                        <i class="bi bi-grid-3x3-gap-fill text-success"></i>
+                        <span>แผนภูมิความเสี่ยงรวม</span>
+                    </a>
+                </li>
+
+                <!-- 4. แผนภูมิความเสี่ยงแยก -->
+                <li class="nav-item">
+                    <a class="nav-link" id="menu-split-chart" onclick="switchTab('split-chart')">
+                        <i class="bi bi-pie-chart-fill text-primary"></i>
+                        <span>แผนภูมิความเสี่ยงแยก</span>
+                    </a>
+                </li>
+
+                <!-- 5. แผนดำเนินการลดความเสี่ยง -->
+                <li class="nav-item">
+                    <a class="nav-link" id="menu-action-plan" onclick="switchTab('action-plan')">
+                        <i class="bi bi-file-earmark-check-fill text-danger"></i>
+                        <span>แผนดำเนินการลดความเสี่ยง</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Footer User Info -->
+            <div class="p-3 border-top border-secondary border-opacity-25 fs-8 text-muted text-center">
+                NocTra Risk System v1.0
+            </div>
+        </aside>
+
+        <!-- ==================== MAIN CONTENT AREA ==================== -->
+        <main class="main-content">
+            <!-- Top Filter Controls -->
+            <div class="top-filter-card d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">สรุปการบริหารจัดการความเสี่ยง ฝ่ายทรัพยากรบุคคล</h4>
+                    <p class="text-muted fs-7 mb-0">Dashboard สำหรับติดตามระดับความเสี่ยง Risk Appetite และแผนดำเนินการลดความเสี่ยง</p>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-calendar3"></i></span>
+                        <select class="form-select border-start-0 fw-semibold text-dark bg-light" style="min-width: 160px;">
+                            <option selected>@currentRound</option>
+                            <option>รอบที่ 1/2569</option>
+                            <option>รอบที่ 2/2568</option>
+                        </select>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-8 rounded-pill">
+                        <i class="bi bi-clock-history me-1"></i> ประเมิน ณ วันที่ @asOfDate
+                    </span>
+                </div>
+            </div>
+
+            <!-- Dynamic Content Sections -->
+            <!-- SECTION 1: OVERVIEW -->
+            <div id="section-overview" class="content-section">
+                <div class="content-card p-4 text-center">
+                    <div class="py-4">
+                        <i class="bi bi-speedometer2 display-5 text-primary mb-3"></i>
+                        <h5 class="fw-bold text-dark">ภาพรวมการบริหารจัดการความเสี่ยง</h5>
+                        <p class="text-muted fs-7 mb-0">(ส่วนแสดง KPI Cards 49 รายการ, Risk Heat Map Matrix และตารางรายการความเสี่ยงคงเหลือเกิน Risk Appetite)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: REGISTER -->
+            <div id="section-register" class="content-section d-none">
+                <div class="content-card p-4 text-center">
+                    <div class="py-4">
+                        <i class="bi bi-journal-text display-5 text-warning mb-3"></i>
+                        <h5 class="fw-bold text-dark">ทะเบียนความเสี่ยง (Risk Register)</h5>
+                        <p class="text-muted fs-7 mb-0">(ส่วนแสดงตารางข้อมูล Risk ID, Risk Event, Risk Factor และการประเมินค่า L x I)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: OVERALL CHART -->
+            <div id="section-overall-chart" class="content-section d-none">
+                <div class="content-card p-4 text-center">
+                    <div class="py-4">
+                        <i class="bi bi-grid-3x3-gap-fill display-5 text-success mb-3"></i>
+                        <h5 class="fw-bold text-dark">แผนภูมิความเสี่ยงรวม (Overall Heat Map Chart)</h5>
+                        <p class="text-muted fs-7 mb-0">(ส่วนแสดงเมทริกซ์ความเสี่ยงรวมแบบภาพกว้างระดับองค์กร)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: SPLIT CHART -->
+            <div id="section-split-chart" class="content-section d-none">
+                <div class="content-card p-4 text-center">
+                    <div class="py-4">
+                        <i class="bi bi-pie-chart-fill display-5 text-primary mb-3"></i>
+                        <h5 class="fw-bold text-dark">แผนภูมิความเสี่ยงแยก (Categorized Risk Charts)</h5>
+                        <p class="text-muted fs-7 mb-0">(ส่วนแสดงแผนภูมิแยกตามหมวดหมู่ Strategic, Operational, Financial, Compliance)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: ACTION PLAN -->
+            <div id="section-action-plan" class="content-section d-none">
+                <div class="content-card p-4 text-center">
+                    <div class="py-4">
+                        <i class="bi bi-file-earmark-check-fill display-5 text-danger mb-3"></i>
+                        <h5 class="fw-bold text-dark">แผนดำเนินการลดความเสี่ยง (Action Plan)</h5>
+                        <p class="text-muted fs-7 mb-0">(ส่วนติดตามสถานะและผู้รับผิดชอบมาตรการจัดการความเสี่ยง)</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JS สำหรับสลับหน้าผ่าน Sidebar Navigation -->
+    <script>
+            function switchTab(tabId) {
+                // 1. ซ่อนทุก Section
+                document.querySelectorAll('.content-section').forEach(el => el.classList.add('d-none'));
+
+                // 2. เอาคลาส active ออกจากเมนูทุกตัว
+                document.querySelectorAll('.risk-sidebar .nav-link').forEach(el => el.classList.remove('active'));
+
+                // 3. แสดง Section ที่เลือก
+                const targetSection = document.getElementById('section-' + tabId);
+                if (targetSection) {
+                    targetSection.classList.remove('d-none');
+                }
+
+                // 4. เพิ่มคลาส active ให้เมนูที่เลือก
+                const targetMenu = document.getElementById('menu-' + tabId);
+                if (targetMenu) {
+                    targetMenu.classList.add('active');
+                }
+            }
+    </script>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

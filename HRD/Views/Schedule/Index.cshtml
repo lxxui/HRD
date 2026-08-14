@@ -1,0 +1,386 @@
+﻿@{
+    ViewData["Title"] = "แผนและตารางการฝึกอบรม (HRD Schedule)";
+}
+
+<!-- Custom HRD Dashboard Styling -->
+<style>
+    :root {
+        --fh-red: #C8102E;
+        --fh-red-dark: #9B0B21;
+        --fh-red-soft: #FFF0F2;
+        --fh-green: #10B981;
+        --fh-green-soft: #ECFDF5;
+        --fh-blue: #3B82F6;
+        --fh-blue-soft: #EFF6FF;
+        --fh-orange: #F59E0B;
+        --fh-orange-soft: #FFFBEB;
+        --fh-bg: #F8FAFC;
+        --card-radius: 16px;
+    }
+
+    body {
+        background-color: var(--fh-bg);
+        font-family: 'Kanit', sans-serif;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: var(--card-radius);
+        background: #ffffff;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease-in-out;
+    }
+
+    .dashboard-card:hover {
+        box-shadow: 0 8px 25px -4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Status Badges */
+    .badge-upcoming {
+        background-color: var(--fh-blue-soft);
+        color: var(--fh-blue);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .badge-in-progress {
+        background-color: var(--fh-orange-soft);
+        color: var(--fh-orange);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-completed {
+        background-color: var(--fh-green-soft);
+        color: var(--fh-green);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    /* Date Box Component */
+    .date-box {
+        width: 50px;
+        height: 50px;
+        background-color: var(--fh-red-soft);
+        color: var(--fh-red);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .date-box .month {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+    }
+
+    .date-box .day {
+        font-size: 1.1rem;
+    }
+
+    .table-custom th {
+        color: #64748B;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #F1F5F9;
+        padding-bottom: 12px;
+    }
+
+    .table-custom td {
+        vertical-align: middle;
+        padding: 14px 8px;
+        border-bottom: 1px solid #F8FAFC;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header Area -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h4 class="fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                <i class="bi bi-calendar-week-fill text-danger"></i>
+                ตารางและแผนการฝึกอบรมบุคลากร (HRD Schedule)
+            </h4>
+            <p class="text-muted small m-0 mt-1">ติดตามกำหนดการ อัตราการเข้าร่วม และการสะสมชั่วโมงฝึกอบรมประจำปี</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm dashboard-card border-0 px-3 py-2 fw-medium shadow-sm" style="width: 150px;">
+                <option value="all" selected>ทุกแผนก</option>
+                <option value="it">ไอที (IT)</option>
+                <option value="hr">ทรัพยากรบุคคล</option>
+                <option value="prod">ฝ่ายผลิต</option>
+                <option value="mkt">การตลาด / ขาย</option>
+            </select>
+            <select class="form-select form-select-sm dashboard-card border-0 px-3 py-2 fw-medium shadow-sm" style="width: 160px;">
+                <option selected>ประจำปี 2569 (2026)</option>
+                <option value="2025">ประจำปี 2568 (2025)</option>
+            </select>
+            <button class="btn btn-danger btn-sm rounded-3 px-3 py-2 fw-medium d-flex align-items-center gap-1 shadow-sm">
+                <i class="bi bi-plus-lg"></i> เพิ่มหลักสูตร
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Section: 4 Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-card p-3 d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle p-3 bg-danger bg-opacity-10 text-danger fs-4">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-medium">หลักสูตรทั้งหมด</div>
+                    <div class="fs-4 fw-bold text-dark">42 <span class="fs-7 text-muted fw-normal">คอร์ส</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-card p-3 d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle p-3 bg-primary bg-opacity-10 text-primary fs-4">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-medium">ชั่วโมงอบรมสะสม</div>
+                    <div class="fs-4 fw-bold text-dark">1,280 <span class="fs-7 text-muted fw-normal">/ 1,500 ชม.</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-card p-3 d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle p-3 bg-success bg-opacity-10 text-success fs-4">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-medium">อัตราการเข้าร่วม (Attendance)</div>
+                    <div class="fs-4 fw-bold text-dark">94.2%</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card dashboard-card p-3 d-flex flex-row align-items-center gap-3">
+                <div class="rounded-circle p-3 bg-warning bg-opacity-10 text-warning fs-4">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-medium">กำลังจะจัด (Next 30 Days)</div>
+                    <div class="fs-4 fw-bold text-dark">6 <span class="fs-7 text-muted fw-normal">หลักสูตร</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row g-3 mb-4">
+        <!-- Left Side: Upcoming Schedule Table -->
+        <div class="col-lg-8">
+            <div class="card dashboard-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold text-dark m-0">กำหนดการฝึกอบรม (Upcoming & Active Schedule)</h6>
+                        <small class="text-muted">รายการหลักสูตรที่มีกำหนดจัดในเร็วๆ นี้</small>
+                    </div>
+                    <a href="#" class="text-danger small fw-semibold text-decoration-none">ดูทั้งหมด <i class="bi bi-chevron-right"></i></a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-custom w-100 m-0">
+                        <thead>
+                            <tr>
+                                <th>วันที่ / เวลา</th>
+                                <th>ชื่อหลักสูตร & หมวดหมู่</th>
+                                <th>สถานที่ / ช่องทาง</th>
+                                <th>ผู้เข้าอบรม</th>
+                                <th>สถานะ</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Item 1 -->
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="date-box">
+                                            <span class="month">ส.ค.</span>
+                                            <span class="day">18</span>
+                                        </div>
+                                        <div class="fs-7 text-muted">09:00 - 16:00</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark fs-7">Cybersecurity Awareness & PDPA Compliance</div>
+                                    <span class="badge bg-light text-secondary border fw-normal fs-8">IT & Security</span>
+                                </td>
+                                <td class="fs-7 text-muted">
+                                    <i class="bi bi-geo-alt me-1 text-danger"></i>ห้องประชุมใหญ่ ชั้น 3
+                                </td>
+                                <td class="fs-7 text-dark fw-medium">35/40 คน</td>
+                                <td>
+                                    <span class="badge badge-upcoming rounded-pill px-2.5 py-1 fs-8">Upcoming</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-light rounded-circle"><i class="bi bi-three-dots-vertical"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Item 2 -->
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="date-box">
+                                            <span class="month">ส.ค.</span>
+                                            <span class="day">22</span>
+                                        </div>
+                                        <div class="fs-7 text-muted">13:00 - 16:00</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark fs-7">Leadership Development for Junior Managers</div>
+                                    <span class="badge bg-light text-secondary border fw-normal fs-8">Management</span>
+                                </td>
+                                <td class="fs-7 text-muted">
+                                    <i class="bi bi-camera-video me-1 text-primary"></i>MS Teams (Online)
+                                </td>
+                                <td class="fs-7 text-dark fw-medium">15/15 คน</td>
+                                <td>
+                                    <span class="badge badge-in-progress rounded-pill px-2.5 py-1 fs-8">In Progress</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-light rounded-circle"><i class="bi bi-three-dots-vertical"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Item 3 -->
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="date-box" style="background-color: #ECFDF5; color: #10B981;">
+                                            <span class="month">ส.ค.</span>
+                                            <span class="day">10</span>
+                                        </div>
+                                        <div class="fs-7 text-muted">09:00 - 12:00</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark fs-7">Effective UX/UI Design for Enterprise Applications</div>
+                                    <span class="badge bg-light text-secondary border fw-normal fs-8">Technical</span>
+                                </td>
+                                <td class="fs-7 text-muted">
+                                    <i class="bi bi-geo-alt me-1 text-danger"></i>ห้อง Lab คอมพิวเตอร์
+                                </td>
+                                <td class="fs-7 text-dark fw-medium">20/20 คน</td>
+                                <td>
+                                    <span class="badge badge-completed rounded-pill px-2.5 py-1 fs-8">Completed</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-light rounded-circle"><i class="bi bi-three-dots-vertical"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Category Ratio Donut & Quick Info -->
+        <div class="col-lg-4 d-flex flex-column gap-3">
+            <!-- Donut Chart Card -->
+            <div class="card dashboard-card p-4 flex-fill text-center">
+                <h6 class="fw-bold text-dark m-0 text-start">สัดส่วนหมวดหมู่หลักสูตร</h6>
+                <small class="text-muted d-block text-start mb-3">จำแนกตามประเภททักษะ (Skill Types)</small>
+                
+                <div class="chart-container my-2" style="height: 180px; width: 180px; position: relative;">
+                    <canvas id="hrdCategoryDonut"></canvas>
+                </div>
+
+                <div class="row g-2 mt-2 text-start fs-7">
+                    <div class="col-6"><span class="badge rounded-circle p-1 me-1" style="background: #C8102E;"></span> Soft Skills (40%)</div>
+                    <div class="col-6"><span class="badge rounded-circle p-1 me-1" style="background: #3B82F6;"></span> Technical (30%)</div>
+                    <div class="col-6"><span class="badge rounded-circle p-1 me-1" style="background: #10B981;"></span> Compliance (20%)</div>
+                    <div class="col-6"><span class="badge rounded-circle p-1 me-1" style="background: #F59E0B;"></span> Leadership (10%)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Chart: Monthly Training Hours Progress -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold text-dark m-0">สรุปชั่วโมงการฝึกอบรมรายเดือน (เป้าหมาย vs ทำได้จริง)</h6>
+                        <small class="text-muted">เปรียบเทียบ Training Hours สะสมในแต่ละเดือน</small>
+                    </div>
+                </div>
+                <div class="chart-container w-100" style="height: 220px;">
+                    <canvas id="monthlyHoursChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // --- 1. Donut Chart: หมวดหมู่การอบรม ---
+        new Chart(document.getElementById('hrdCategoryDonut'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Soft Skills', 'Technical', 'Compliance', 'Leadership'],
+                datasets: [{
+                    data: [40, 30, 20, 10],
+                    backgroundColor: ['#C8102E', '#3B82F6', '#10B981', '#F59E0B'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // --- 2. Bar Chart: ชั่วโมงอบรมรายเดือน ---
+        new Chart(document.getElementById('monthlyHoursChart'), {
+            type: 'bar',
+            data: {
+                labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                datasets: [
+                    {
+                        label: 'ทำได้จริง (Actual)',
+                        data: [120, 150, 180, 90, 200, 210, 160, 170, 0, 0, 0, 0],
+                        backgroundColor: '#C8102E',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'เป้าหมาย (Target)',
+                        data: [130, 130, 150, 100, 180, 180, 150, 150, 150, 150, 150, 150],
+                        backgroundColor: '#E2E8F0',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', align: 'end' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#F1F5F9' },
+                        ticks: { font: { family: 'Kanit' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Kanit' } }
+                    }
+                }
+            }
+        });
+    });
+</script>

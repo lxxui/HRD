@@ -1,0 +1,353 @@
+﻿@{
+    ViewData["Title"] = "ระบบติดตามการฝึกอบรมหน้างาน (OJT Tracking)";
+}
+
+<!-- Import Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --primary-red: #C8102E;
+        --primary-dark: #9B0B21;
+        --bg-slate: #F8FAFC;
+        --card-radius: 16px;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        font-family: 'Kanit', sans-serif;
+    }
+
+    .ojt-card {
+        border: none;
+        border-radius: var(--card-radius);
+        background: #ffffff;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .fs-7 {
+        font-size: 0.875rem;
+    }
+
+    .fs-8 {
+        font-size: 0.75rem;
+    }
+
+    /* Timeline Stepper */
+    .step-item {
+        position: relative;
+        padding-left: 28px;
+    }
+
+        .step-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 24px;
+            bottom: -12px;
+            width: 2px;
+            background-color: #E2E8F0;
+        }
+
+        .step-item:last-child::before {
+            display: none;
+        }
+
+    .step-icon {
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: #CBD5E1;
+    }
+
+    .step-item.completed .step-icon {
+        background-color: #10B981;
+    }
+
+    .step-item.active .step-icon {
+        background-color: var(--primary-red);
+        ring: 4px solid #FEE2E2;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- 1. Header & Navigation Actions -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h4 class="fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                <i class="bi bi-person-workspace text-danger"></i>
+                On-the-Job Training (OJT) Management
+            </h4>
+            <p class="text-muted small m-0 mt-1">ระบบติดตามผลการฝึกอบรมการปฏิบัติงานจริงและประเมินทักษะพนักงาน</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-danger btn-sm rounded-3 px-3 py-2 fw-medium" data-bs-toggle="modal" data-bs-target="#createOjtModal">
+                <i class="bi bi-plus-circle me-1"></i> สร้างแผน OJT ใหม่
+            </button>
+            <a asp-controller="Elearning" asp-action="Index" class="btn btn-light btn-sm rounded-3 px-3 py-2 text-muted fw-medium border">
+                <i class="bi bi-journal-bookmark me-1"></i> กลับหน้า E-Learning
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Overview Stats (KPI Metric Cards) -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card ojt-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted fs-8 fw-semibold d-block">แผน OJT ที่กำลังดำเนินการ</span>
+                        <h3 class="fw-bold text-dark m-0 mt-1">12 <span class="fs-7 text-muted fw-normal">รายการ</span></h3>
+                    </div>
+                    <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-4">
+                        <i class="bi bi-play-circle-fill fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card ojt-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted fs-8 fw-semibold d-block">พนักงานที่อยู่ระหว่างฝึก</span>
+                        <h3 class="fw-bold text-dark m-0 mt-1">8 <span class="fs-7 text-muted fw-normal">คน</span></h3>
+                    </div>
+                    <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-4">
+                        <i class="bi bi-people-fill fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card ojt-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted fs-8 fw-semibold d-block">รอตรวจ / ประเมินผล</span>
+                        <h3 class="fw-bold text-warning m-0 mt-1">3 <span class="fs-7 text-muted fw-normal">หัวข้อ</span></h3>
+                    </div>
+                    <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-4">
+                        <i class="bi bi-clock-history fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card ojt-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted fs-8 fw-semibold d-block">ผ่านการประเมินแล้ว (เดือนนี้)</span>
+                        <h3 class="fw-bold text-success m-0 mt-1">15 <span class="fs-7 text-muted fw-normal">คน</span></h3>
+                    </div>
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-4">
+                        <i class="bi bi-patch-check-fill fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Main Workspace: Trainee Active Progress & Checklist -->
+    <div class="row g-4 mb-4">
+
+        <!-- Left Column: Active OJT Trainee Card & Tasks -->
+        <div class="col-lg-8">
+            <div class="card ojt-card p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 border-bottom mb-3 gap-2">
+                    <div>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill fs-8 px-3">In Progress</span>
+                        <h5 class="fw-bold text-dark m-0 mt-2">หลักสูตร OJT : การปฏิบัติงานฝ่ายไอทีและการสนับสนุนผู้ใช้งาน</h5>
+                        <p class="text-muted fs-7 m-0">รหัสแผนงาน: OJT-IT-2026-003 | ระยะเวลา: 30 วัน</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="fs-8 text-muted d-block">ความคืบหน้ารวม</span>
+                        <span class="fw-bold text-danger fs-5">75%</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress mb-4" style="height: 8px;">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <!-- Trainee Info Banner -->
+                <div class="p-3 rounded-3 bg-light d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-white p-2 rounded-circle border shadow-sm">
+                            <i class="bi bi-person-circle fs-3 text-secondary"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark fs-7">ผู้รับการฝึก (Trainee): นายสมชาย ใจดี (EMP-9042)</div>
+                            <div class="fs-8 text-muted">แผนก: IT Support | วันที่เริ่มฝึก: 01 ส.ค. 2026</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-dark fs-7"><i class="bi bi-person-badge text-danger me-1"></i> พี่เลี้ยง (Mentor)</div>
+                        <div class="fs-8 text-muted">พี่ต๋อม / IT Lead</div>
+                    </div>
+                </div>
+
+                <!-- OJT Task Checklist -->
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-list-check text-danger me-1"></i> รายการงานที่ต้องเรียนรู้และปฏิบัติจริง (OJT Checklist)</h6>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border-top">
+                        <thead class="table-light fs-8 text-muted">
+                            <tr>
+                                <th style="width: 50px;">สถานะ</th>
+                                <th>หัวข้อ / ทักษะการปฏิบัติงาน</th>
+                                <th>วิธีกระทำ (Learning Method)</th>
+                                <th class="text-center">ผู้ประเมิน</th>
+                                <th class="text-end">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fs-7">
+                            <tr>
+                                <td><i class="bi bi-check-circle-fill text-success fs-5"></i></td>
+                                <td>
+                                    <div class="fw-semibold text-dark">1. การจัดทำและตรวจสอบสิทธิ์ใช้งาน User IAM</div>
+                                    <small class="text-muted fs-8">เรียนรู้การเพิ่ม/แก้ไขสิทธิ์พนักงานตามระดับชั้น</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fs-8">หน้างานจริง (On-Job)</span></td>
+                                <td class="text-center"><span class="badge bg-success-subtle text-success fs-8">ผ่านแล้ว</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-light rounded-pill px-3 fs-8">ดูรายละเอียด</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-check-circle-fill text-success fs-5"></i></td>
+                                <td>
+                                    <div class="fw-semibold text-dark">2. การติดตั้งและ Setup ระบบ Network / Printer โรงงาน</div>
+                                    <small class="text-muted fs-8">เชื่อมต่อ IP และทดสอบการพิมพ์ใบงาน</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fs-8">สาธิต + ปฏิบัติ</span></td>
+                                <td class="text-center"><span class="badge bg-success-subtle text-success fs-8">ผ่านแล้ว</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-light rounded-pill px-3 fs-8">ดูรายละเอียด</button>
+                                </td>
+                            </tr>
+                            <tr class="table-warning bg-opacity-10">
+                                <td><i class="bi bi-clock-history text-warning fs-5"></i></td>
+                                <td>
+                                    <div class="fw-semibold text-dark">3. การแก้ไขปัญหาระบบแจ้งซ่อมเบื้องต้น (V-Fix System)</div>
+                                    <small class="text-muted fs-8">รับ Ticket และประสานงานฝ่ายที่เกี่ยวข้อง</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fs-8">ทดลองทำจริง</span></td>
+                                <td class="text-center"><span class="badge bg-warning-subtle text-warning fs-8">รอตรวจผล</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-danger rounded-pill px-3 fs-8">ส่งผลประเมิน</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-circle text-muted fs-5"></i></td>
+                                <td>
+                                    <div class="fw-semibold text-dark">4. สรุปรายงานและวิเคราะห์ Log รายสัปดาห์</div>
+                                    <small class="text-muted fs-8">จัดทำ Zycoda Report เสนอหัวหน้างาน</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border fs-8">รายงานเสนอ</span></td>
+                                <td class="text-center"><span class="badge bg-secondary-subtle text-secondary fs-8">ยังไม่เริ่ม</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-light rounded-pill px-3 fs-8" disabled>ยังไม่ถึงเวลา</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Column: Mentorship Timeline & Evaluation Summary -->
+        <div class="col-lg-4 d-flex flex-column gap-4">
+
+            <!-- Timeline การติดตามผล OJT -->
+            <div class="card ojt-card p-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-diagram-3-fill text-danger me-1"></i> ขั้นตอนการฝึก OJT (Phase)</h6>
+
+                <div class="d-flex flex-column gap-3 mt-2">
+                    <div class="step-item completed">
+                        <div class="step-icon"></div>
+                        <div class="fw-bold fs-7 text-dark">Week 1: Orientation & Observation</div>
+                        <p class="fs-8 text-muted mb-0">ปฐมนิเทศและเรียนรู้จากการสังเกตพี่เลี้ยง</p>
+                    </div>
+
+                    <div class="step-item active">
+                        <div class="step-icon"></div>
+                        <div class="fw-bold fs-7 text-danger">Week 2-3: Guided Practice (ช่วงปัจจุบัน)</div>
+                        <p class="fs-8 text-muted mb-0">ทดลองปฏิบัติงานภายใต้การดูแลของ Mentor</p>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-icon"></div>
+                        <div class="fw-bold fs-7 text-dark">Week 4: Solo Execution & Final Test</div>
+                        <p class="fs-8 text-muted mb-0">ปฏิบัติงานด้วยตนเองและสอบประเมินภาคสนาม</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- กล่องบันทึกข้อเสนอแนะจาก Mentor -->
+            <div class="card ojt-card p-4">
+                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-chat-square-text-fill text-primary me-1"></i> บันทึกจากพี่เลี้ยง (Mentor Notes)</h6>
+                <div class="p-3 bg-light rounded-3 mb-3">
+                    <p class="fs-8 text-dark mb-1">"น้องเรียนรู้การใช้งานโปรแกรมได้เร็วมาก มีความเข้าใจโครงสร้างระบบดี เหลือแค่การสื่อสารหน้าร้านเพิ่มเติมครับ"</p>
+                    <small class="text-muted fs-8 d-block text-end">— พี่ต๋อม (12 ส.ค. 2569)</small>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm rounded-3 w-100 fs-7">
+                    <i class="bi bi-pencil-square me-1"></i> เพิ่มข้อเสนอแนะ
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal สำหรับสร้างแผน OJT ใหม่ -->
+<div class="modal fade" id="createOjtModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-journal-plus text-danger me-2"></i>สร้างแผนการฝึกงาน OJT</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fs-7 fw-semibold">ชื่อพนักงานผู้รับการฝึก (Trainee)</label>
+                            <input type="text" class="form-control bg-light border-0 fs-7" placeholder="ระบุชื่อหรือรหัสพนักงาน">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-7 fw-semibold">พี่เลี้ยงประจำตัว (Mentor)</label>
+                            <input type="text" class="form-control bg-light border-0 fs-7" placeholder="ระบุชื่อพี่เลี้ยงดูแล">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fs-7 fw-semibold">ชื่อหลักสูตร / ตำแหน่งที่ฝึก</label>
+                            <input type="text" class="form-control bg-light border-0 fs-7" placeholder="เช่น การปฏิบัติงานระบบคลังสินค้า / IT Support">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-7 fw-semibold">วันที่เริ่มฝึก</label>
+                            <input type="date" class="form-control bg-light border-0 fs-7">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-7 fw-semibold">ระยะเวลาฝึก (วัน)</label>
+                            <input type="number" class="form-control bg-light border-0 fs-7" value="30">
+                        </div>
+                    </div>
+                    <div class="mt-4 text-end">
+                        <button type="button" class="btn btn-light rounded-3 px-3 me-2 fs-7" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="button" class="btn btn-danger rounded-3 px-4 fs-7" onclick="alert('สร้างแผน OJT เรียบร้อยแล้ว');" data-bs-dismiss="modal">บันทึกแผนงาน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

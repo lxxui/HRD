@@ -1,0 +1,354 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Training Dashboard";
+    string activeTab = Context.Request.Query["tab"].ToString();
+    if (string.IsNullOrEmpty(activeTab)) { activeTab = "orientation"; }
+
+    var tabs = new Dictionary<string, (string Label, string Icon)>
+    {
+        { "orientation", ("ปฐมนิเทศ", "bi-person-badge") },
+        { "quality", ("ระบบงานคุณภาพ", "bi-patch-check") },
+        { "safety", ("ความปลอดภัย", "bi-shield-check") },
+        { "development", ("พัฒนาศักยภาพ", "bi-graph-up-arrow") },
+        { "governance", ("กำกับดูแลกิจการ", "bi-building-gear") },
+        { "external", ("ฝึกอบรมภายนอก", "bi-box-arrow-up-right") },
+        { "ojt", ("OJT", "bi-person-workspace") }
+    };
+
+    string tabTitle = tabs.ContainsKey(activeTab) ? tabs[activeTab].Label : "ปฐมนิเทศ";
+    bool showExtendedCols = activeTab is "quality" or "safety" or "development" or "governance" or "external";
+}
+
+<style>
+    /* Clean Enterprise Styling */
+    :root {
+        --dash-bg: #f8fafc;
+        --card-border: #e2e8f0;
+        --card-hover-border: #cbd5e1;
+        --primary-dark: #0f172a;
+    }
+
+    .bg-main {
+        background-color: var(--dash-bg);
+    }
+
+    .nav-pills-custom .nav-link {
+        color: #64748b;
+        background-color: #ffffff;
+        border: 1px solid var(--card-border);
+        font-weight: 500;
+        border-radius: 10px;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+    }
+
+        .nav-pills-custom .nav-link:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .nav-pills-custom .nav-link.active {
+            background-color: var(--primary-dark);
+            color: #ffffff;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+        }
+
+    /* Course Card Styling */
+    .course-card {
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        background: #ffffff;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.08);
+            border-color: var(--card-hover-border);
+        }
+
+    .metric-pill {
+        background-color: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 8px;
+        padding: 6px 12px;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+
+    .score-box {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 6px 4px;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4 bg-main min-vh-100">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">HRD Training Dashboard</h4>
+            <p class="text-muted fs-7 mb-0">ภาพรวมการจัดอบรมและติดตามผลการพัฒนาบุคลากร</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm rounded-3 bg-white shadow-sm d-flex align-items-center gap-2 px-3">
+                <i class="bi bi-file-earmark-excel text-success"></i> Export Excel
+            </button>
+            <button class="btn btn-primary btn-sm rounded-3 shadow-sm d-flex align-items-center gap-2 px-3">
+                <i class="bi bi-plus-lg"></i> บันทึกการอบรมใหม่
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Metric Cards Summary -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted fs-8 fw-medium text-uppercase">หลักสูตรทั้งหมด</span>
+                        <h3 class="fw-bold text-dark my-1">24</h3>
+                    </div>
+                    <div class="icon-box bg-primary-subtle text-primary">
+                        <i class="bi bi-journal-text fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted fs-8 fw-medium text-uppercase">ผู้เข้าร่วมอบรม</span>
+                        <h3 class="fw-bold text-dark my-1">342 <small class="fs-7 text-muted fw-normal">คน</small></h3>
+                    </div>
+                    <div class="icon-box bg-info-subtle text-info">
+                        <i class="bi bi-people fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted fs-8 fw-medium text-uppercase">เวลาอบรมสะสม</span>
+                        <h3 class="fw-bold text-dark my-1">148 <small class="fs-7 text-muted fw-normal">ชม.</small></h3>
+                    </div>
+                    <div class="icon-box bg-warning-subtle text-warning-emphasis">
+                        <i class="bi bi-clock-history fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted fs-8 fw-medium text-uppercase">งบประมาณใช้ไป</span>
+                        <h3 class="fw-bold text-danger my-1">฿125,400</h3>
+                    </div>
+                    <div class="icon-box bg-danger-subtle text-danger">
+                        <i class="bi bi-wallet2 fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation & Filter Bar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <ul class="nav nav-pills nav-pills-custom gap-2 flex-nowrap overflow-auto py-1">
+            @foreach (var tab in tabs)
+            {
+                bool isActive = activeTab == tab.Key;
+                <li class="nav-item">
+                    <a class="nav-link fs-7 d-flex align-items-center gap-2 text-nowrap @(isActive ? "active" : "")"
+                       href="@Url.Action("Index", new { tab = tab.Key })">
+                        <i class="bi @tab.Value.Icon"></i>
+                        @tab.Value.Label
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <div class="d-flex align-items-center gap-2 ms-auto ms-md-0">
+            <div class="input-group input-group-sm style-search" style="width: 260px;">
+                <span class="input-group-text bg-white border-end-0 text-muted rounded-start-3"><i class="bi bi-search"></i></span>
+                <input type="text" id="courseSearchInput" class="form-control bg-white border-start-0 rounded-end-3 ps-0" placeholder="ค้นหาชื่อหลักสูตร...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Cards Grid Layout -->
+    <div class="row g-3" id="courseGrid">
+        @{
+            var courseList = Model as IEnumerable<dynamic>;
+            bool hasData = courseList != null && courseList.Any();
+        }
+
+        @if (hasData)
+        {
+            foreach (var item in courseList)
+            {
+                // Dynamic mapping for model compatibility
+                DateTime trainingDate = item.TrainingDate;
+                string courseName = item.CourseName ?? "-";
+                double hours = Convert.ToDouble(item.Hours ?? 0);
+                int totalAttendees = Convert.ToInt32(item.TotalAttendees ?? 0);
+                decimal totalExpense = Convert.ToDecimal(item.TotalExpense ?? 0);
+
+                <div class="col-12 col-md-6 col-xl-4 course-item" data-course-name="@courseName.ToLower()">
+                    <div class="course-card p-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+
+                        <!-- Card Top Content -->
+                        <div>
+                            <!-- Header: Code & Action Dropdown -->
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge bg-light text-secondary border fw-normal fs-8">
+                                    <i class="bi bi-hash"></i>TR-@trainingDate.ToString("yyyyMM")
+                                </span>
+                                <div class="dropdown">
+                                    <button class="btn btn-link text-muted p-0 fs-6 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end fs-7 shadow-sm border-0">
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2 text-secondary"></i>แก้ไขข้อมูล</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>ลบหลักสูตร</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Course Title & Date -->
+                            <h6 class="fw-bold text-dark mb-1 text-truncate" title="@courseName">@courseName</h6>
+                            <p class="text-muted fs-8 mb-3">
+                                <i class="bi bi-calendar3 me-1"></i>@trainingDate.ToString("dd MMM yyyy")
+                                <span class="mx-1">•</span>
+                                <i class="bi bi-clock me-1"></i>@hours ชม.
+                            </p>
+
+                            <!-- Attendees Pill -->
+                            <div class="metric-pill d-flex justify-content-between align-items-center mb-3 fs-8">
+                                <span class="text-muted"><i class="bi bi-people me-1"></i>ผู้เข้าร่วมทั้งหมด</span>
+                                @if (showExtendedCols)
+                                {
+                                    <span class="fw-bold text-dark">@totalAttendees คน <small class="text-muted fw-normal">(ชาย @item.MaleCount / หญิง @item.FemaleCount)</small></span>
+                                }
+                                else
+                                {
+                                    <span class="fw-bold text-dark">@totalAttendees คน</span>
+                                }
+                            </div>
+
+                            <!-- Extended Info (CapabilityModel Case) -->
+                            @if (showExtendedCols)
+                            {
+                                double passRate = Convert.ToDouble(item.PassedTestPercent ?? 0);
+                                <div class="border-top pt-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-center fs-8 mb-1">
+                                        <span class="text-secondary fw-medium">ผลการทดสอบ (Post-Test)</span>
+                                        <span class="fw-bold text-success">ผ่าน @passRate.ToString("0")%</span>
+                                    </div>
+                                    <div class="progress mb-3" style="height: 6px;">
+                                        <div class="progress-bar bg-success rounded-pill" style="width: @passRate%"></div>
+                                    </div>
+
+                                    <!-- Score Badges -->
+                                    <div class="d-flex justify-content-between fs-8 text-center score-box border">
+                                        <div class="flex-fill">
+                                            <span class="d-block text-muted fs-8">หลักสูตร</span>
+                                            <strong class="text-primary">@(item.CourseEvaluationScore?.ToString("N1") ?? "-")</strong>
+                                        </div>
+                                        <div class="flex-fill border-start border-end">
+                                            <span class="d-block text-muted fs-8">วิทยากร</span>
+                                            <strong class="text-success">@(item.InstructorEvaluationScore?.ToString("N1") ?? "-")</strong>
+                                        </div>
+                                        <div class="flex-fill">
+                                            <span class="d-block text-muted fs-8">เจ้าหน้าที่</span>
+                                            <strong class="text-info">@(item.StaffEvaluationScore?.ToString("N1") ?? "-")</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="border-top pt-2 mt-auto d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="d-block fs-8 text-muted">งบประมาณ</span>
+                                <span class="fw-bold text-dark fs-7">฿@totalExpense.ToString("N2")</span>
+                            </div>
+
+                            <div>
+                                @if (showExtendedCols)
+                                {
+                                    int notEval = Convert.ToInt32(item.NotEvaluatedAfter3MonthsCount ?? 0);
+                                    if (notEval > 0)
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fs-8">
+                                            <i class="bi bi-hourglass-split me-1"></i>รอติดตาม 3 เดือน
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle fs-8">
+                                            <i class="bi bi-check-all me-1"></i>ติดตามครบแล้ว
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-secondary border fs-8">@(item.Category ?? tabTitle)</span>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <div class="bg-white p-5 rounded-4 border shadow-sm d-inline-block">
+                    <i class="bi bi-inbox fs-1 text-secondary opacity-50 d-block mb-3"></i>
+                    <h6 class="fw-bold text-dark mb-1">ไม่พบข้อมูลการอบรม</h6>
+                    <p class="text-muted fs-7 mb-0">ไม่มีรายการข้อมูลสำหรับหมวดหมู่ <span class="fw-medium text-dark">@tabTitle</span> ในขณะนี้</p>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+<!-- Client-side Filter Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('courseSearchInput');
+        const courseItems = document.querySelectorAll('.course-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function (e) {
+                const keyword = e.target.value.toLowerCase().trim();
+
+                courseItems.forEach(item => {
+                    const courseName = item.getAttribute('data-course-name') || '';
+                    if (courseName.includes(keyword)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>

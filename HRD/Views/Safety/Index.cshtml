@@ -1,0 +1,286 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "รายงานสรุปการเข้าอบรมตามหลักสูตร";
+
+    // Mockup ข้อมูลโครงสร้างตรงตาม Google Sheet ของคุณฝ้าย
+    var departmentReports = new[]
+    {
+        new { Dept = "ฝ่ายผลิต (Production)", Target1 = 120, Attended1 = 118, Target2 = 120, Attended2 = 115, Target3 = 120, Attended3 = 120 },
+        new { Dept = "ฝ่ายประกันคุณภาพ (QA/QC)", Target1 = 25, Attended1 = 25, Target2 = 25, Attended2 = 25, Target3 = 25, Attended3 = 25 },
+        new { Dept = "ฝ่ายวิศวกรรม & ช่างบำรุง", Target1 = 40, Attended1 = 38, Target2 = 40, Attended2 = 35, Target3 = 40, Attended3 = 39 },
+        new { Dept = "ฝ่ายคลังสินค้า & โลจิสติกส์", Target1 = 35, Attended1 = 33, Target2 = 35, Attended2 = 30, Target3 = 35, Attended3 = 34 },
+        new { Dept = "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", Target1 = 10, Attended1 = 10, Target2 = 10, Attended2 = 10, Target3 = 10, Attended3 = 10 }
+    };
+
+    // คำนวณสรุปรวมทั้งหมด
+    int totalT1 = departmentReports.Sum(x => x.Target1);
+    int totalA1 = departmentReports.Sum(x => x.Attended1);
+    double totalP1 = totalT1 > 0 ? (double)totalA1 / totalT1 * 100 : 0;
+
+    int totalT2 = departmentReports.Sum(x => x.Target2);
+    int totalA2 = departmentReports.Sum(x => x.Attended2);
+    double totalP2 = totalT2 > 0 ? (double)totalA2 / totalT2 * 100 : 0;
+
+    int totalT3 = departmentReports.Sum(x => x.Target3);
+    int totalA3 = departmentReports.Sum(x => x.Attended3);
+    double totalP3 = totalT3 > 0 ? (double)totalA3 / totalT3 * 100 : 0;
+}
+
+<style>
+    :root {
+        --fs-primary: #064e3b; /* Deep Emerald Green */
+        --fs-primary-light: #047857;
+        --fs-bg: #f8fafc;
+        --fs-border: #e2e8f0;
+    }
+
+    .bg-fs-header {
+        background-color: #f1f5f9;
+    }
+
+    .table-training th {
+        vertical-align: middle;
+        text-align: center;
+        font-size: 0.825rem;
+        font-weight: 600;
+        border-bottom: 2px solid var(--fs-border);
+    }
+
+    .table-training td {
+        vertical-align: middle;
+        font-size: 0.85rem;
+    }
+
+    .course-header-1 {
+        background-color: #ecfdf5;
+        color: #065f46;
+    }
+
+    .course-header-2 {
+        background-color: #f0fdf4;
+        color: #166534;
+    }
+
+    .course-header-3 {
+        background-color: #eff6ff;
+        color: #1e40af;
+    }
+
+    .badge-percent {
+        min-width: 55px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4 bg-light min-vh-100">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-8 fw-semibold">
+                    <i class="bi bi-file-earmark-spreadsheet me-1"></i> Google Sheets Sync
+                </span>
+            </div>
+            <h4 class="fw-bold text-dark mt-2 mb-1">รายงานสรุปการเข้าอบรมตามหลักสูตรประจำปี</h4>
+            <p class="text-muted fs-7 mb-0">ติดตามสถิติจำนวนผู้เข้าอบรมแยกตามฝ่าย และประเมิน % ความสำเร็จของแต่ละหลักสูตร</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm bg-white rounded-3 shadow-sm d-flex align-items-center gap-2 px-3">
+                <i class="bi bi-arrow-clockwise text-primary"></i> ซิงค์ข้อมูลล่าสุด
+            </button>
+            <button class="btn btn-sm text-white rounded-3 shadow-sm d-flex align-items-center gap-2 px-3" style="background-color: var(--fs-primary);">
+                <i class="bi bi-file-earmark-excel"></i> Export Excel
+            </button>
+        </div>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-success">
+                <span class="text-muted fs-8 fw-medium">1. ระบบคุณภาพและความปลอดภัยทางอาหาร</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-2">
+                    <h3 class="fw-bold text-dark mb-0">@totalP1.ToString("F1")%</h3>
+                    <span class="fs-8 text-muted">@totalA1 / @totalT1 คน</span>
+                </div>
+                <div class="progress mt-2" style="height: 6px;">
+                    <div class="progress-bar bg-success" style="width: @totalP1%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-emerald" style="border-color: var(--fs-primary-light) !important;">
+                <span class="text-muted fs-8 fw-medium">2. ทบทวนระบบคุณภาพและความปลอดภัยทางอาหาร</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-2">
+                    <h3 class="fw-bold text-dark mb-0">@totalP2.ToString("F1")%</h3>
+                    <span class="fs-8 text-muted">@totalA2 / @totalT2 คน</span>
+                </div>
+                <div class="progress mt-2" style="height: 6px;">
+                    <div class="progress-bar" style="width: @totalP2%; background-color: var(--fs-primary-light);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-primary">
+                <span class="text-muted fs-8 fw-medium">3. ความรู้ 7ส. เพื่อการประยุกต์ใช้</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-2">
+                    <h3 class="fw-bold text-dark mb-0">@totalP3.ToString("F1")%</h3>
+                    <span class="fs-8 text-muted">@totalA3 / @totalT3 คน</span>
+                </div>
+                <div class="progress mt-2" style="height: 6px;">
+                    <div class="progress-bar bg-primary" style="width: @totalP3%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Data Table Container -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h6 class="fw-bold text-dark mb-0"><i class="bi bi-table me-2 text-success"></i>ตารางข้อมูลการเข้าอบรมรายฝ่าย</h6>
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="deptSearch" class="form-control border-start-0 ps-0" placeholder="ค้นหาชื่อฝ่าย...">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 table-training" id="trainingTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="bg-fs-header text-start px-3" style="min-width: 200px;">สังกัดฝ่าย</th>
+
+                        <!-- Header หลักสูตร 1 -->
+                        <th colspan="4" class="course-header-1 border-bottom-0">
+                            1. หลักสูตรระบบคุณภาพและความปลอดภัยทางอาหาร
+                        </th>
+
+                        <!-- Header หลักสูตร 2 -->
+                        <th colspan="4" class="course-header-2 border-bottom-0">
+                            2. หลักสูตรทบทวนระบบคุณภาพและความปลอดภัยทางอาหาร
+                        </th>
+
+                        <!-- Header หลักสูตร 3 -->
+                        <th colspan="4" class="course-header-3 border-bottom-0">
+                            3. หลักสูตรความรู้ 7ส. เพื่อการประยุกต์ใช้
+                        </th>
+                    </tr>
+                    <tr class="bg-light">
+                        <!-- Sub Header 1 -->
+                        <th class="text-secondary fw-normal">เป้าหมาย (คน)</th>
+                        <th class="text-success">เข้าอบรม (คน)</th>
+                        <th class="text-danger">ไม่ได้เข้า (คน)</th>
+                        <th class="text-dark">คิดเป็น (%)</th>
+
+                        <!-- Sub Header 2 -->
+                        <th class="text-secondary fw-normal">เป้าหมาย (คน)</th>
+                        <th class="text-success">เข้าอบรม (คน)</th>
+                        <th class="text-danger">ไม่ได้เข้า (คน)</th>
+                        <th class="text-dark">คิดเป็น (%)</th>
+
+                        <!-- Sub Header 3 -->
+                        <th class="text-secondary fw-normal">เป้าหมาย (คน)</th>
+                        <th class="text-success">เข้าอบรม (คน)</th>
+                        <th class="text-danger">ไม่ได้เข้า (คน)</th>
+                        <th class="text-dark">คิดเป็น (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in departmentReports)
+                    {
+                        int missing1 = item.Target1 - item.Attended1;
+                        double pct1 = item.Target1 > 0 ? (double)item.Attended1 / item.Target1 * 100 : 0;
+
+                        int missing2 = item.Target2 - item.Attended2;
+                        double pct2 = item.Target2 > 0 ? (double)item.Attended2 / item.Target2 * 100 : 0;
+
+                        int missing3 = item.Target3 - item.Attended3;
+                        double pct3 = item.Target3 > 0 ? (double)item.Attended3 / item.Target3 * 100 : 0;
+
+                        <tr class="dept-row">
+                            <td class="fw-semibold text-dark text-start px-3 dept-name">@item.Dept</td>
+
+                            <!-- Course 1 -->
+                            <td class="text-center text-secondary">@item.Target1</td>
+                            <td class="text-center fw-medium text-success">@item.Attended1</td>
+                            <td class="text-center fw-medium @(missing1 > 0 ? "text-danger" : "text-muted")">@missing1</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill badge-percent @(pct1 >= 100 ? "bg-success-subtle text-success" : pct1 >= 80 ? "bg-warning-subtle text-warning-emphasis" : "bg-danger-subtle text-danger")">
+                                    @pct1.ToString("F1")%
+                                </span>
+                            </td>
+
+                            <!-- Course 2 -->
+                            <td class="text-center text-secondary">@item.Target2</td>
+                            <td class="text-center fw-medium text-success">@item.Attended2</td>
+                            <td class="text-center fw-medium @(missing2 > 0 ? "text-danger" : "text-muted")">@missing2</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill badge-percent @(pct2 >= 100 ? "bg-success-subtle text-success" : pct2 >= 80 ? "bg-warning-subtle text-warning-emphasis" : "bg-danger-subtle text-danger")">
+                                    @pct2.ToString("F1")%
+                                </span>
+                            </td>
+
+                            <!-- Course 3 -->
+                            <td class="text-center text-secondary">@item.Target3</td>
+                            <td class="text-center fw-medium text-success">@item.Attended3</td>
+                            <td class="text-center fw-medium @(missing3 > 0 ? "text-danger" : "text-muted")">@missing3</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill badge-percent @(pct3 >= 100 ? "bg-primary-subtle text-primary" : pct3 >= 80 ? "bg-warning-subtle text-warning-emphasis" : "bg-danger-subtle text-danger")">
+                                    @pct3.ToString("F1")%
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <!-- Summary Row -->
+                <tfoot class="table-light fw-bold">
+                    <tr>
+                        <td class="text-start px-3 text-dark">รวมทั้งสิ้น (Total)</td>
+
+                        <!-- Course 1 Total -->
+                        <td class="text-center text-dark">@totalT1</td>
+                        <td class="text-center text-success">@totalA1</td>
+                        <td class="text-center text-danger">@(totalT1 - totalA1)</td>
+                        <td class="text-center text-success">@totalP1.ToString("F1")%</td>
+
+                        <!-- Course 2 Total -->
+                        <td class="text-center text-dark">@totalT2</td>
+                        <td class="text-center text-success">@totalA2</td>
+                        <td class="text-center text-danger">@(totalT2 - totalA2)</td>
+                        <td class="text-center text-success">@totalP2.ToString("F1")%</td>
+
+                        <!-- Course 3 Total -->
+                        <td class="text-center text-dark">@totalT3</td>
+                        <td class="text-center text-success">@totalA3</td>
+                        <td class="text-center text-danger">@(totalT3 - totalA3)</td>
+                        <td class="text-center text-primary">@totalP3.ToString("F1")%</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('deptSearch');
+        const rows = document.querySelectorAll('.dept-row');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function (e) {
+                const keyword = e.target.value.toLowerCase().trim();
+                rows.forEach(row => {
+                    const deptName = row.querySelector('.dept-name').textContent.toLowerCase();
+                    if (deptName.includes(keyword)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>

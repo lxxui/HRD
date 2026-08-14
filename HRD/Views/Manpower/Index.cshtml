@@ -1,0 +1,475 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Manpower Management Dashboard";
+    string asOfDate = DateTime.Now.ToString("dd/MM/yyyy");
+
+    // Mockup โครงสร้างข้อมูลรายฝ่าย (เตรียมพร้อมรับ Model จริงจาก Controller)
+    var manpowerData = new[]
+    {
+        new {
+            Dept = "ฝ่ายผลิต (Production)", SectionCount = 3, BranchCount = 2,
+            Daily = 280, Monthly = 45, Delivery = 12, Retail = 0, Receiving = 8, Drivers = 5, TechPvs = 12, TechBsc = 6,
+            SalesTrainee = 0, AsstUnitHead = 10, UnitHead = 5, FoodEng = 4,
+            AsstDept1 = 3, AsstDept2 = 2, DeputyDept1 = 2, DeputyDept2 = 1, DeptHead = 2, SrDeptHead = 1,
+            AsstSecMgr = 1, SecMgr = 1, AsstDeptMgr = 1, DeptMgr = 1, SrDeptMgr = 1, Director = 1,
+            Male = 240, Female = 186
+        },
+        new {
+            Dept = "ฝ่ายประกันคุณภาพ (QA/QC)", SectionCount = 2, BranchCount = 1,
+            Daily = 35, Monthly = 20, Delivery = 0, Retail = 0, Receiving = 5, Drivers = 0, TechPvs = 8, TechBsc = 15,
+            SalesTrainee = 0, AsstUnitHead = 4, UnitHead = 2, FoodEng = 8,
+            AsstDept1 = 2, AsstDept2 = 1, DeputyDept1 = 1, DeputyDept2 = 1, DeptHead = 1, SrDeptHead = 1,
+            AsstSecMgr = 0, SecMgr = 1, AsstDeptMgr = 0, DeptMgr = 1, SrDeptMgr = 0, Director = 0,
+            Male = 22, Female = 85
+        },
+        new {
+            Dept = "ฝ่ายคลังสินค้า & โลจิสติกส์", SectionCount = 4, BranchCount = 3,
+            Daily = 110, Monthly = 30, Delivery = 45, Retail = 0, Receiving = 20, Drivers = 35, TechPvs = 5, TechBsc = 2,
+            SalesTrainee = 0, AsstUnitHead = 8, UnitHead = 4, FoodEng = 0,
+            AsstDept1 = 2, AsstDept2 = 2, DeputyDept1 = 1, DeputyDept2 = 1, DeptHead = 1, SrDeptHead = 1,
+            AsstSecMgr = 1, SecMgr = 1, AsstDeptMgr = 1, DeptMgr = 1, SrDeptMgr = 0, Director = 0,
+            Male = 210, Female = 65
+        },
+        new {
+            Dept = "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", SectionCount = 1, BranchCount = 1,
+            Daily = 0, Monthly = 12, Delivery = 0, Retail = 0, Receiving = 0, Drivers = 0, TechPvs = 3, TechBsc = 7,
+            SalesTrainee = 0, AsstUnitHead = 2, UnitHead = 1, FoodEng = 0,
+            AsstDept1 = 1, AsstDept2 = 0, DeputyDept1 = 1, DeputyDept2 = 0, DeptHead = 1, SrDeptHead = 0,
+            AsstSecMgr = 0, SecMgr = 1, AsstDeptMgr = 0, DeptMgr = 1, SrDeptMgr = 0, Director = 0,
+            Male = 9, Female = 9
+        }
+    };
+
+    // คำนวณสรุปรวมทั้งองค์กร
+    int totalOverall = manpowerData.Sum(x => x.Male + x.Female);
+    int totalMale = manpowerData.Sum(x => x.Male);
+    int totalFemale = manpowerData.Sum(x => x.Female);
+    double pctMale = totalOverall > 0 ? (double)totalMale / totalOverall * 100 : 0;
+    double pctFemale = totalOverall > 0 ? (double)totalFemale / totalOverall * 100 : 0;
+
+    // คำนวณยอดรวมรายคอลัมน์
+    int totSection = manpowerData.Sum(x => x.SectionCount);
+    int totBranch = manpowerData.Sum(x => x.BranchCount);
+    int totDaily = manpowerData.Sum(x => x.Daily);
+    int totMonthly = manpowerData.Sum(x => x.Monthly);
+    int totDelivery = manpowerData.Sum(x => x.Delivery);
+    int totRetail = manpowerData.Sum(x => x.Retail);
+    int totReceiving = manpowerData.Sum(x => x.Receiving);
+    int totDrivers = manpowerData.Sum(x => x.Drivers);
+    int totTechPvs = manpowerData.Sum(x => x.TechPvs);
+    int totTechBsc = manpowerData.Sum(x => x.TechBsc);
+    int totSalesTrainee = manpowerData.Sum(x => x.SalesTrainee);
+    int totAsstUnitHead = manpowerData.Sum(x => x.AsstUnitHead);
+    int totUnitHead = manpowerData.Sum(x => x.UnitHead);
+    int totFoodEng = manpowerData.Sum(x => x.FoodEng);
+    int totAsstDept1 = manpowerData.Sum(x => x.AsstDept1);
+    int totAsstDept2 = manpowerData.Sum(x => x.AsstDept2);
+    int totDeputyDept1 = manpowerData.Sum(x => x.DeputyDept1);
+    int totDeputyDept2 = manpowerData.Sum(x => x.DeputyDept2);
+    int totDeptHead = manpowerData.Sum(x => x.DeptHead);
+    int totSrDeptHead = manpowerData.Sum(x => x.SrDeptHead);
+    int totAsstSecMgr = manpowerData.Sum(x => x.AsstSecMgr);
+    int totSecMgr = manpowerData.Sum(x => x.SecMgr);
+    int totExecOthers = manpowerData.Sum(x => x.AsstDeptMgr + x.DeptMgr + x.SrDeptMgr + x.Director);
+
+    int totalLeadersAll = manpowerData.Sum(x =>
+        x.AsstUnitHead + x.UnitHead + x.AsstDept1 + x.AsstDept2 +
+        x.DeputyDept1 + x.DeputyDept2 + x.DeptHead + x.SrDeptHead +
+        x.AsstSecMgr + x.SecMgr + x.AsstDeptMgr + x.DeptMgr + x.SrDeptMgr + x.Director);
+}
+
+<style>
+    :root {
+        --mp-primary: #064e3b; /* Deep Emerald Green */
+        --mp-primary-light: #047857;
+        --mp-bg: #f8fafc;
+        --mp-border: #cbd5e1;
+    }
+
+    .bg-mp-main {
+        background-color: var(--mp-bg);
+    }
+
+    /* Helper Classes */
+    .fs-7 {
+        font-size: 0.875rem !important;
+    }
+
+    .fs-8 {
+        font-size: 0.78rem !important;
+    }
+
+    .fs-9 {
+        font-size: 0.70rem !important;
+    }
+
+    /* Table Styling & Fixed Sticky Column */
+    .table-manpower {
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+        .table-manpower th {
+            vertical-align: middle;
+            text-align: center;
+            font-weight: 600;
+            padding: 8px 6px;
+        }
+
+        .table-manpower td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 6px 6px;
+        }
+
+    /* Sticky first column */
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background-color: #ffffff;
+        z-index: 2;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    }
+
+    th.sticky-col {
+        z-index: 3;
+        background-color: #f1f5f9;
+    }
+
+    tfoot .sticky-col {
+        background-color: #f1f5f9;
+    }
+
+    /* Category Header Colors */
+    .th-dept {
+        background-color: #f1f5f9;
+        color: #1e293b;
+    }
+
+    .th-operational {
+        background-color: #f0fdf4;
+        color: #166534;
+    }
+
+    .th-technical {
+        background-color: #ecfdf5;
+        color: #065f46;
+    }
+
+    .th-supervisor {
+        background-color: #fefce8;
+        color: #854d0e;
+    }
+
+    .th-executive {
+        background-color: #f0f9ff;
+        color: #075985;
+    }
+
+    .th-summary {
+        background-color: #f8fafc;
+        color: #0f172a;
+    }
+
+    /* Hover Effects */
+    .table-manpower tbody tr:hover td {
+        background-color: #f1f5f9;
+    }
+
+    .table-manpower tbody tr:hover .sticky-col {
+        background-color: #e2e8f0;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4 bg-mp-main min-vh-100">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-8 fw-semibold">
+                    <i class="bi bi-people-fill me-1"></i> HR & Manpower Analytics
+                </span>
+                <span class="badge bg-light text-secondary border fs-8">ข้อมูล ณ วันที่: @asOfDate</span>
+            </div>
+            <h4 class="fw-bold text-dark mt-2 mb-1">รายงานอัตรากำลังคน (Manpower Report)</h4>
+            <p class="text-muted fs-7 mb-0">สรุปจำนวนพนักงานแยกตามสังกัดฝ่าย ระดับตำแหน่งงาน และสัดส่วนเพศ</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm bg-white rounded-3 shadow-sm d-flex align-items-center gap-2 px-3" onclick="refreshData()">
+                <i class="bi bi-arrow-clockwise text-primary"></i> รีเฟรชข้อมูล
+            </button>
+            <button class="btn btn-sm text-white rounded-3 shadow-sm d-flex align-items-center gap-2 px-3" style="background-color: var(--mp-primary);" onclick="exportExcel()">
+                <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total Manpower -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-success h-100">
+                <span class="text-muted fs-8 fw-medium text-uppercase">กำลังคนทั้งหมด (Total)</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-1">
+                    <h2 class="fw-bold text-dark mb-0">@totalOverall.ToString("N0")</h2>
+                    <span class="fs-8 text-muted">คน</span>
+                </div>
+                <div class="fs-8 text-muted mt-2">
+                    <i class="bi bi-building me-1"></i>รวมทุกสังกัดฝ่าย
+                </div>
+            </div>
+        </div>
+
+        <!-- Male Ratio -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-primary h-100">
+                <span class="text-muted fs-8 fw-medium text-uppercase">พนักงานชาย (Male)</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-1">
+                    <h2 class="fw-bold text-primary mb-0">@totalMale.ToString("N0")</h2>
+                    <span class="badge bg-primary-subtle text-primary fw-bold">@pctMale.ToString("F1")%</span>
+                </div>
+                <div class="progress mt-2" style="height: 5px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: @pctMale%" aria-valuenow="@pctMale" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Female Ratio -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-danger h-100">
+                <span class="text-muted fs-8 fw-medium text-uppercase">พนักงานหญิง (Female)</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-1">
+                    <h2 class="fw-bold text-danger mb-0">@totalFemale.ToString("N0")</h2>
+                    <span class="badge bg-danger-subtle text-danger fw-bold">@pctFemale.ToString("F1")%</span>
+                </div>
+                <div class="progress mt-2" style="height: 5px;">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: @pctFemale%" aria-valuenow="@pctFemale" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Management Count -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-warning h-100">
+                <span class="text-muted fs-8 fw-medium text-uppercase">ระดับหัวหน้างานขึ้นไป</span>
+                <div class="d-flex align-items-baseline justify-content-between mt-1">
+                    <h2 class="fw-bold text-dark mb-0">@totalLeadersAll.ToString("N0")</h2>
+                    <span class="fs-8 text-muted">คน</span>
+                </div>
+                <div class="fs-8 text-success mt-2">
+                    <i class="bi bi-graph-up-arrow me-1"></i>คิดเป็น @((totalOverall > 0 ? (double)totalLeadersAll / totalOverall * 100 : 0).ToString("F1"))% ของทั้งหมด
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Data Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h6 class="fw-bold text-dark mb-0"><i class="bi bi-table me-2 text-success"></i>ตารางโครงสร้างอัตรากำลังคนรายฝ่าย</h6>
+            <div class="input-group input-group-sm" style="width: 260px;">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="mpSearch" class="form-control border-start-0 ps-0" placeholder="ค้นหาฝ่ายงานสังกัด...">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0 table-manpower" id="manpowerTable">
+                <thead>
+                    <!-- Row 1: Main Category Headers -->
+                    <tr>
+                        <th rowspan="2" class="sticky-col th-dept text-start px-3" style="min-width: 180px;">ฝ่ายงานสังกัด</th>
+                        <th rowspan="2" class="th-dept">จำนวน<br>ส่วน</th>
+                        <th rowspan="2" class="th-dept">จำนวน<br>แผนก/สาขา</th>
+
+                        <th colspan="6" class="th-operational">ระดับปฏิบัติการ & ทั่วไป</th>
+                        <th colspan="3" class="th-technical">สายเทคนิค & ชาญการ</th>
+                        <th colspan="5" class="th-supervisor">ระดับหัวหน้างาน / PC / สายงาน</th>
+                        <th colspan="7" class="th-executive">ระดับบริหาร & ผู้จัดการ</th>
+
+                        <th colspan="3" class="th-summary bg-dark text-white">สรุปกำลังคน</th>
+                        <th colspan="4" class="th-summary bg-secondary text-white">จำแนกตามเพศ</th>
+                    </tr>
+
+                    <!-- Row 2: Detailed Positions -->
+                    <tr class="bg-light">
+                        <!-- Operational -->
+                        <th class="th-operational">รายวัน</th>
+                        <th class="th-operational">รายเดือน</th>
+                        <th class="th-operational">ส่งสินค้า<br>รายเดือน</th>
+                        <th class="th-operational">ขายหน้าร้าน</th>
+                        <th class="th-operational">ตรวจรับสินค้า</th>
+                        <th class="th-operational">ขับรถ</th>
+
+                        <!-- Technical -->
+                        <th class="th-technical">ช่าง/เจ้าหน้าที่<br>ปวส.</th>
+                        <th class="th-technical">เจ้าหน้าที่<br>ป.ตรี</th>
+                        <th class="th-technical">ขายรับหน่วย /<br>ฝึกหัด</th>
+
+                        <!-- Supervisor -->
+                        <th class="th-supervisor">ผู้ช่วยหัวหน้า<br>หน่วย</th>
+                        <th class="th-supervisor">หัวหน้าหน่วย /<br>PC</th>
+                        <th class="th-supervisor">เจ้าหน้าที่<br>Food / Eng</th>
+                        <th class="th-supervisor">ผช.หัวหน้าแผนก 1 /<br>รองหัวหน้าสาขา</th>
+                        <th class="th-supervisor">ผช.หัวหน้าแผนก 2</th>
+
+                        <!-- Executive -->
+                        <th class="th-executive">รองผก.แผนก 1 /<br>หัวหน้าสาขา</th>
+                        <th class="th-executive">รองผก.แผนก 2</th>
+                        <th class="th-executive">หัวหน้าแผนก</th>
+                        <th class="th-executive">หัวหน้าแผนก<br>อาวุโส</th>
+                        <th class="th-executive">ผช.ผจก.ส่วน/ภาค</th>
+                        <th class="th-executive">ผจก.ส่วน/ภาค</th>
+                        <th class="th-executive">ผช.ผจก.ฝ่าย -<br>กรรมการฯ</th>
+
+                        <!-- Summary -->
+                        <th class="bg-dark text-white">รวมหัวหน้างาน</th>
+                        <th class="bg-dark text-white">กำลังคนทั้งหมด</th>
+                        <th class="bg-dark text-white">คิดเป็น %</th>
+
+                        <!-- Gender -->
+                        <th class="bg-secondary text-white">ชาย</th>
+                        <th class="bg-secondary text-white">ชาย (%)</th>
+                        <th class="bg-secondary text-white">หญิง</th>
+                        <th class="bg-secondary text-white">หญิง (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in manpowerData)
+                    {
+                        int rowLeaders = row.AsstUnitHead + row.UnitHead + row.AsstDept1 + row.AsstDept2 +
+                        row.DeputyDept1 + row.DeputyDept2 + row.DeptHead + row.SrDeptHead +
+                        row.AsstSecMgr + row.SecMgr + row.AsstDeptMgr + row.DeptMgr + row.SrDeptMgr + row.Director;
+
+                        int rowTotal = row.Male + row.Female;
+                        double rowPct = totalOverall > 0 ? (double)rowTotal / totalOverall * 100 : 0;
+                        double rowMalePct = rowTotal > 0 ? (double)row.Male / rowTotal * 100 : 0;
+                        double rowFemalePct = rowTotal > 0 ? (double)row.Female / rowTotal * 100 : 0;
+
+                        <tr class="mp-row">
+                            <td class="sticky-col text-start px-3 fw-bold text-dark mp-dept">@row.Dept</td>
+                            <td class="text-muted">@row.SectionCount</td>
+                            <td class="text-muted">@row.BranchCount</td>
+
+                            <!-- Operational Data -->
+                            <td>@row.Daily</td>
+                            <td>@row.Monthly</td>
+                            <td>@row.Delivery</td>
+                            <td>@row.Retail</td>
+                            <td>@row.Receiving</td>
+                            <td>@row.Drivers</td>
+
+                            <!-- Technical Data -->
+                            <td>@row.TechPvs</td>
+                            <td>@row.TechBsc</td>
+                            <td>@row.SalesTrainee</td>
+
+                            <!-- Supervisor Data -->
+                            <td>@row.AsstUnitHead</td>
+                            <td>@row.UnitHead</td>
+                            <td>@row.FoodEng</td>
+                            <td>@row.AsstDept1</td>
+                            <td>@row.AsstDept2</td>
+
+                            <!-- Executive Data -->
+                            <td>@row.DeputyDept1</td>
+                            <td>@row.DeputyDept2</td>
+                            <td>@row.DeptHead</td>
+                            <td>@row.SrDeptHead</td>
+                            <td>@row.AsstSecMgr</td>
+                            <td>@row.SecMgr</td>
+                            <td>@(row.AsstDeptMgr + row.DeptMgr + row.SrDeptMgr + row.Director)</td>
+
+                            <!-- Summary Columns -->
+                            <td class="fw-bold text-success bg-success-subtle">@rowLeaders</td>
+                            <td class="fw-bold text-dark bg-light">@rowTotal</td>
+                            <td class="fw-bold text-dark">@rowPct.ToString("F1")%</td>
+
+                            <!-- Gender Columns -->
+                            <td class="text-primary fw-medium">@row.Male</td>
+                            <td class="text-primary fs-9">@rowMalePct.ToString("F0")%</td>
+                            <td class="text-danger fw-medium">@row.Female</td>
+                            <td class="text-danger fs-9">@rowFemalePct.ToString("F0")%</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="fw-bold bg-light border-top border-2">
+                        <td class="sticky-col text-start px-3 text-dark">ยอดรวมทั้งหมด (Total)</td>
+                        <td>@totSection</td>
+                        <td>@totBranch</td>
+
+                        <!-- Operational Totals -->
+                        <td>@totDaily</td>
+                        <td>@totMonthly</td>
+                        <td>@totDelivery</td>
+                        <td>@totRetail</td>
+                        <td>@totReceiving</td>
+                        <td>@totDrivers</td>
+
+                        <!-- Technical Totals -->
+                        <td>@totTechPvs</td>
+                        <td>@totTechBsc</td>
+                        <td>@totSalesTrainee</td>
+
+                        <!-- Supervisor Totals -->
+                        <td>@totAsstUnitHead</td>
+                        <td>@totUnitHead</td>
+                        <td>@totFoodEng</td>
+                        <td>@totAsstDept1</td>
+                        <td>@totAsstDept2</td>
+
+                        <!-- Executive Totals -->
+                        <td>@totDeputyDept1</td>
+                        <td>@totDeputyDept2</td>
+                        <td>@totDeptHead</td>
+                        <td>@totSrDeptHead</td>
+                        <td>@totAsstSecMgr</td>
+                        <td>@totSecMgr</td>
+                        <td>@totExecOthers</td>
+
+                        <!-- Grand Summary Totals -->
+                        <td class="bg-success-subtle text-success fs-7">@totalLeadersAll</td>
+                        <td class="bg-dark text-white fs-7">@totalOverall</td>
+                        <td class="bg-dark text-white fs-7">100%</td>
+
+                        <!-- Gender Totals -->
+                        <td class="bg-secondary text-white">@totalMale</td>
+                        <td class="bg-secondary text-white">@pctMale.ToString("F0")%</td>
+                        <td class="bg-secondary text-white">@totalFemale</td>
+                        <td class="bg-secondary text-white">@pctFemale.ToString("F0")%</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('mpSearch');
+        const rows = document.querySelectorAll('.mp-row');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function (e) {
+                const keyword = e.target.value.toLowerCase().trim();
+                rows.forEach(row => {
+                    const deptCell = row.querySelector('.mp-dept');
+                    if (deptCell) {
+                        const deptName = deptCell.textContent.toLowerCase();
+                        row.style.display = deptName.includes(keyword) ? '' : 'none';
+                    }
+                });
+            });
+        }
+    });
+
+    function refreshData() {
+        location.reload();
+    }
+
+    function exportExcel() {
+        alert('กำลังเตรียมดาวน์โหลดไฟล์ Excel...');
+    }
+</script>

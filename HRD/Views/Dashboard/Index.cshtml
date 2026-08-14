@@ -1,0 +1,431 @@
+﻿@{
+    ViewData["Title"] = "HRD Web Application - Enterprise Portal";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard_index.css" asp-append-version="true" />
+}
+
+<style>
+    /* ----------------------------------------------------
+           Enterprise Module Card Styles
+        ---------------------------------------------------- */
+    .custom-module-card {
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-radius: 18px !important;
+        background: #ffffff;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .custom-module-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08) !important;
+        }
+
+    /* Accent top bar based on category theme */
+    .card-top-bar {
+        height: 4px;
+        width: 100%;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .theme-danger .card-top-bar {
+        background: linear-gradient(90deg, #C8102E 0%, #ff6b81 100%);
+    }
+
+    .theme-primary .card-top-bar {
+        background: linear-gradient(90deg, #0d6efd 0%, #0dcaf0 100%);
+    }
+
+    .theme-success .card-top-bar {
+        background: linear-gradient(90deg, #198754 0%, #20c997 100%);
+    }
+
+    .custom-module-card:hover .card-top-bar {
+        height: 6px;
+        opacity: 1;
+    }
+
+    /* กล่องใส่ภาพไอคอน - ขยายขนาดให้ชัดเจนมากขึ้น */
+    .card-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 8px;
+    }
+
+    .theme-danger .card-icon-wrapper {
+        background-color: #fef2f2;
+        border: 1px solid #fee2e2;
+    }
+
+    .theme-primary .card-icon-wrapper {
+        background-color: #eff6ff;
+        border: 1px solid #dbeafe;
+    }
+
+    .theme-success .card-icon-wrapper {
+        background-color: #f0fdf4;
+        border: 1px solid #dcfce7;
+    }
+
+    .custom-module-card:hover .card-icon-wrapper {
+        transform: scale(1.08) rotate(-2deg);
+    }
+
+    /* ขยายขนาดรูปภาพให้มองเห็นชัดเจน */
+    .card-icon-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.06));
+    }
+
+    /* Icon Bootstrap Fallback */
+    .card-icon-wrapper i {
+        font-size: 1.75rem;
+    }
+
+    /* Hover Micro-interactions */
+    .icon-arrow {
+        transition: transform 0.2s ease;
+    }
+
+    .custom-module-card:hover .icon-arrow {
+        transform: translateX(4px);
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+    <!-- 1. Header Hero Banner -->
+    <div class="hero-banner mb-5 overflow-hidden position-relative rounded-4 shadow-sm"
+         style="background: url('@Url.Content("~/images/banners/banner.png")') center/cover no-repeat;">
+
+        <div class="position-absolute top-0 start-0 w-100 h-100"
+             style="background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 75%);"></div>
+
+        <div class="row align-items-center py-4 px-3 px-md-4 position-relative z-1" style="min-height: 220px;">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-danger fw-bold px-3 py-2 mb-3 rounded-pill shadow-sm opacity-90">
+                    INTERNAL SYSTEM
+                </span>
+                <h1 class="fw-bold display-5 mb-2 text-white text-shadow">HRD WEB APP</h1>
+                <p class="mb-0 fs-6 text-white fw-light text-shadow opacity-90">
+                    EMPOWERING PEOPLE • ENHANCING PERFORMANCE • DRIVING EXCELLENCE
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Learning & Development Section -->
+    <div class="mb-5">
+        <div class="section-title mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-journal-bookmark-fill text-danger fs-5"></i>
+            <span class="fw-bold text-dark tracking-wide">LEARNING & DEVELOPMENT</span>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+
+            <!-- Training Dashboard -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/training_dashboard.png" alt="Training Dashboard" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Training Dashboard</h6>
+                            <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Dashboard
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            สถิติและข้อมูลภาพรวมการฝึกอบรมพนักงาน
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Training")" class="stretched-link text-decoration-none fw-semibold text-danger card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>เข้าสู่ระบบ</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HRD Schedule -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/HRD.png" alt="HRD Schedule" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">HRD Schedule</h6>
+                            <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Schedule
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            ตารางและกำหนดการจัดอบรมประจำปี
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Schedule")" class="stretched-link text-decoration-none fw-semibold text-danger card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>ดูตารางงาน</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- E-Learning -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/E-learning.png" alt="E-Learning" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">E - Learning</h6>
+                            <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Online Course
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            ระบบเรียนรู้ออนไลน์และคอร์สฝึกอบรม
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "ELearning")" class="stretched-link text-decoration-none fw-semibold text-danger card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>เข้าเรียน</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Quality Course -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/food_safety.jpg" alt="Food Quality & Safety" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Food Quality & Safety</h6>
+                            <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Safety
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            หลักสูตรมาตรฐานความปลอดภัยอาหาร
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Safety")" class="stretched-link text-decoration-none fw-semibold text-danger card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>รับชมเนื้อหา</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 3. Operations & Analytics Section -->
+    <div class="mb-5">
+        <div class="section-title mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-bar-chart-line-fill text-primary fs-5"></i>
+            <span class="fw-bold text-dark tracking-wide">OPERATIONS & ANALYTICS</span>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+
+            <!-- OJT Dashboard -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/ojt_dashboard.jpg" alt="OJT Dashboard" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">OJT Dashboard</h6>
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                OJT
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            ติดตามผลการฝึกงาน On-the-Job Training
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Ojt")" class="stretched-link text-decoration-none fw-semibold text-primary card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>ดู Dashboard</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manpower Dashboard -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/manpower_dashboard.jpg" alt="Manpower Dashboard" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Manpower Dashboard</h6>
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                HR Data
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            สรุปข้อมูลอัตรากำลังพลพนักงาน
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Manpower")" class="stretched-link text-decoration-none fw-semibold text-primary card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>ตรวจสอบข้อมูล</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment / KRI -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/risk_assessment.jpg" alt="Risk Assessment" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Risk Assessment (KRI)</h6>
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Risk Management
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            ประเมินความเสี่ยงและ Key Risk Indicators
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Risk")" class="stretched-link text-decoration-none fw-semibold text-primary card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>ดูรายงานความเสี่ยง</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 4. Governance & Activity Section -->
+    <div class="mb-4">
+        <div class="section-title mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-shield-check text-success fs-5"></i>
+            <span class="fw-bold text-dark tracking-wide">GOVERNANCE & ACTIVITIES</span>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+
+            <!-- Documents Dashboard -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/document_dashboard.jpg" alt="Documents Dashboard" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Documents Dashboard</h6>
+                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Documents
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            คลังเอกสาร แบบฟอร์ม และคู่มือการทำงาน
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Document")" class="stretched-link text-decoration-none fw-semibold text-success card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>ดาวน์โหลดเอกสาร</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7S Activity Audit -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/audit_7s.jpg" alt="7S Activity Audit" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">7S Activity Audit</h6>
+                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Audit
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            ระบบตรวจประเมินและบันทึกกิจกรรม 7ส
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Audit7s")" class="stretched-link text-decoration-none fw-semibold text-success card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>เข้าสู่ระบบตรวจ</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Points -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden custom-module-card">
+                    <div class="card-img-wrapper overflow-hidden style-banner">
+                        <img src="~/images/activity_points.jpg" alt="Activity Points" class="card-img-top object-fit-cover w-100" style="height: 160px;" />
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0 fs-6">Activity Points</h6>
+                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-10 px-2 py-1 fw-medium" style="font-size: 0.7rem;">
+                                Reward
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1 lh-sm">
+                            สะสมคะแนนกิจกรรมพนักงานและรางวัล
+                        </p>
+                        <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                            <span class="text-uppercase text-muted fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Module</span>
+                            <a href="@Url.Action("Index", "Points")" class="stretched-link text-decoration-none fw-semibold text-success card-link-btn d-inline-flex align-items-center gap-1">
+                                <span>เช็คคะแนน</span>
+                                <i class="bi bi-arrow-right icon-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
